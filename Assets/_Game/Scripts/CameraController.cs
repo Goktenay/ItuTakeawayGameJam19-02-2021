@@ -37,7 +37,8 @@ namespace UnityTemplateProjects
         CameraState m_InterpolatingCameraState = new CameraState();
 
         public float CameraYawValue => m_TargetCameraState.yaw;
-        
+        public Vector3 ForwardVector => transform.forward;
+        public Vector3 RightVector => transform.right;
         
         [Header("Movement Settings")]
         
