@@ -13,11 +13,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _cameraPositionRefTransform;
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private LayerMask _groundLayerMask;
+    [SerializeField] private LayerMask _hookRaycastLayerMask;
     [SerializeField] private Transform _groundedRayCastTransform;
     [SerializeField] private Transform _bulletAimTransform;
-
-    [Space(10)]
-    [SerializeField] private Transform _testBulletTransform;
+    
+ 
     
     [Header("Settings")] 
     [SerializeField] private float _onGroundedMovementSpeed = 8;
@@ -33,14 +33,16 @@ public class PlayerController : MonoBehaviour
     [Space(10)] 
     [SerializeField] private float _onAirMovementForce = 8;
     [SerializeField] private float _isOnAirAfterSwingingxzFriction = 0.05f;
-    
+    [Space(10)] 
+    [SerializeField] private float _hookableDistance = 20;
     
     private Vector2Int _inputDirection = Vector2Int.zero;
-    private bool _isGrounded;
     private float _currentGravity;
+    private bool _isGrounded;
     private bool _isSwinging;
     private bool _isOnAirAfterSwinging = false;
     private bool _isOnGroundedAfterSwinging = true;
+    private bool _isReadyToHook;
     private float _maxTetherLength;
     
     private InputFlag _jumpInput = new InputFlag(KeyCode.Space);
@@ -54,7 +56,8 @@ public class PlayerController : MonoBehaviour
     public Rigidbody Rigidbody => _rigidbody;
     public Transform BulletAimTransform => _bulletAimTransform;
 
-
+    private HookableMetaData _hookableMeta;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -76,6 +79,7 @@ public class PlayerController : MonoBehaviour
             CalculateOnGrounded();
             CalculateJump();
             CalculateGravity();
+            CalculateIsReadyToHook();
             CalculateSwing();
 
             
@@ -158,10 +162,6 @@ public class PlayerController : MonoBehaviour
 
 
  
-
-
-
-                
                 
                 //Debug.DrawRay(transform.position, new Vector3(forwardVec.x, 0, forwardVec.y));
             }
@@ -192,7 +192,8 @@ public class PlayerController : MonoBehaviour
                     _isGrounded = false;
                 }
             }
-
+            
+            
             void CalculateOnGrounded()
             {
                 Ray ray = new Ray(_groundedRayCastTransform.position, Vector3.down);
@@ -222,20 +223,88 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
+            void CalculateIsReadyToHook()
+            {
+                bool isReadyToHookLocal = _isReadyToHook; 
+                
+                _isReadyToHook = false;
+                if (!_isSwinging)
+                {
+                    Ray ray = new Ray(_cameraController.transform.position, _cameraController.ForwardVector);
+
+                    if (Physics.Raycast(ray, out RaycastHit hitInfo, _hookableDistance, _hookRaycastLayerMask))
+                    {
+                        IHookable hookable = hitInfo.collider.GetComponentInParent<IHookable>();
+
+                        if (hookable != null)
+                        {
+                            HookableMetaData data = hookable.TryToGetHookableCondition(hitInfo);
+                            if (data.CanHook)
+                            {
+                                _isReadyToHook = true;
+                                
+                                _hookableMeta = data;
+                              //  Debug.Log("I CAN HOOOK");
+                            }
+                        }
+                        else
+                        {
+                            Debug.LogError("ERROR this shouldnt happen -> " + hitInfo.collider.gameObject.name);
+                        }
+                    }
+                }
+
+                if (isReadyToHookLocal != _isReadyToHook)
+                {
+                    // state Change
+                    Blackboard.Instance.CursorController.OnReadyToHookStateChange(_isReadyToHook);
+                    
+                }
+                
+                
+            }
+            
             void CalculateSwing()
             {
-                if (_mouse0Input.Start)
+
+                if (!_isSwinging && _isReadyToHook)
                 {
-                    _maxTetherLength = (_rigidbody.position - _testBulletTransform.position).magnitude;
+                    if (_mouse0Input.Start)
+                    {
+                        SwingInputStartActions();
+                     
+                    }
+                }
+
+                if (_isSwinging)
+                {
+                    if (_mouse0Input.Update)
+                    {
+                        SwingInputUpdateActions();
+                    }
+
+
+                    if (_mouse0Input.End)
+                    {
+                        SwingInputEndActions();
+                    }
+                }
+                
+                
+                void SwingInputStartActions()
+                {
+                    _hookableMeta.Hookable.OnHookStart();
+                    _maxTetherLength = (_rigidbody.position - _hookableMeta.GetPosition()).magnitude;
                     _isOnAirAfterSwinging = false;
                     _isSwinging = true;
                 }
-                
-                if (_mouse0Input.Update)
+
+                void SwingInputUpdateActions()
                 {
-                    _isOnGroundedAfterSwinging = false;
-                 
-                    Debug.DrawLine(_rigidbody.position, _testBulletTransform.position, Color.green);
+                    _hookableMeta.Hookable.OnHookUpdate();
+                     _isOnGroundedAfterSwinging = false;
+                     
+                    Debug.DrawLine(_rigidbody.position, _hookableMeta.GetPosition(), Color.green);
                     Debug.DrawRay(_rigidbody.position, _rigidbody.velocity, Color.red);
                     Vector3 forwardVec = _cameraController.ForwardVector;
                     Vector3 rightVec = _cameraController.RightVector;
@@ -249,11 +318,11 @@ public class PlayerController : MonoBehaviour
 
                     if (_isGrounded)
                     {
-                        _rigidbody.AddForce( (_testBulletTransform.position - _rigidbody.position).normalized * _tetherTentionForce, ForceMode.Acceleration );
+                        _rigidbody.AddForce( (_hookableMeta.GetPosition() - _rigidbody.position).normalized * _tetherTentionForce, ForceMode.Acceleration );
                     }
                     
                     Vector3 newPos = _rigidbody.position + _rigidbody.velocity * Time.fixedDeltaTime;
-                    Vector3 tetherToNewPos = (newPos - _testBulletTransform.position);
+                    Vector3 tetherToNewPos = (newPos - _hookableMeta.GetPosition());
                     tetherToNewPos = Vector3.ClampMagnitude(tetherToNewPos, _maxTetherLength);
 
                     if (tetherToNewPos.magnitude < _maxTetherLength)
@@ -262,20 +331,23 @@ public class PlayerController : MonoBehaviour
                     }
                     
                     
-                    _rigidbody.velocity = (tetherToNewPos - _rigidbody.position + _testBulletTransform.position).normalized *  _rigidbody.velocity.magnitude;
+                    _rigidbody.velocity = (tetherToNewPos - _rigidbody.position + _hookableMeta.GetPosition()).normalized *  _rigidbody.velocity.magnitude;
 
                     _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, _swingingMaxSpeed);
                     _rigidbody.velocity -= (Time.fixedDeltaTime * _swingingFriction * _rigidbody.velocity);
-                    
-                    //new
+                        
                 }
-
-
-                if (_mouse0Input.End)
+                
+                void SwingInputEndActions()
                 {
+                    _hookableMeta.Hookable.OnHookEnd();
                     _isSwinging = false;
                     _isOnAirAfterSwinging = true;
                 }
+                
+                
+                
+                
 
                 if (_isOnAirAfterSwinging)
                 {

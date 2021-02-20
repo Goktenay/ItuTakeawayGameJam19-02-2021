@@ -143,6 +143,9 @@ MonoBehaviour:
   _groundLayerMask:
     serializedVersion: 2
     m_Bits: 512
+  _hookRaycastLayerMask:
+    serializedVersion: 2
+    m_Bits: 1024
   _groundedRayCastTransform: {fileID: 208847193378812306}
   _bulletAimTransform: {fileID: 4761566082982992015}
   _testBulletTransform: {fileID: 0}
@@ -150,12 +153,13 @@ MonoBehaviour:
   _jumpSpeed: 15
   _upwardsGravity: -25
   _downwardsGravity: -50
-  _tetherTentionForce: 20
+  _tetherTentionForce: 40
   _maxSwingInputForce: 15
   _swingingFriction: 0.05
   _swingingMaxSpeed: 50
   _onAirMovementForce: 50
   _isOnAirAfterSwingingxzFriction: 0.5
+  _hookableDistance: 20
 --- !u!54 &208847193169392290
 Rigidbody:
   m_ObjectHideFlags: 0

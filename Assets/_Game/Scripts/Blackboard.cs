@@ -27,9 +27,12 @@ public class Blackboard : MonoBehaviour
 
     [Header("Dependencies")] 
     [SerializeField] private float _globalTimeMultiplier;
-
+    
+    
     private PlayerController _playerController;
     private Transform _cameraTransform;
+
+    private CursorController _cursorController;
     public float GlobalTimeMultiplier => _globalTimeMultiplier;
 
 
@@ -47,7 +50,22 @@ public class Blackboard : MonoBehaviour
         }
     }
 
+    public CursorController CursorController
+    {
+        get
+        {
+            if (!_isCursorControllerInitialized)
+            {
+                _cursorController = FindObjectOfType<CursorController>();
+                _isCursorControllerInitialized = true;
+            }
 
+            return _cursorController;
+        }
+    }
+    
+    
+    private bool _isCursorControllerInitialized = false;
     private bool _isPlayerControllerInitialized = false;
 
     

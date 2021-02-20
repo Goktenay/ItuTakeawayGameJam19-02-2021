@@ -12,12 +12,14 @@ public class BulletBehaviour : MonoBehaviour , IHookable
     [SerializeField] private float _speed;
     [SerializeField] private float _lifespan;
 
+    private float _currentSpeed;
 
     private Vector3 _direction;
     private float _aliveTime;
     
     public void Initialize(Vector3 direction)
     {
+        _currentSpeed = _speed;
         _direction = direction.normalized;
         _aliveTime = 0;
         transform.rotation = Quaternion.LookRotation(direction);
@@ -32,7 +34,7 @@ public class BulletBehaviour : MonoBehaviour , IHookable
 
     private void FixedUpdate()
     {
-        _rigidbody.MovePosition(_rigidbody.position + Blackboard.Instance.GlobalTimeMultiplier* Time.fixedDeltaTime * _speed * _direction);
+        _rigidbody.MovePosition(_rigidbody.position + Blackboard.Instance.GlobalTimeMultiplier* Time.fixedDeltaTime * _currentSpeed * _direction);
 
         _aliveTime += Time.fixedDeltaTime * Blackboard.Instance.GlobalTimeMultiplier;
 
@@ -42,8 +44,29 @@ public class BulletBehaviour : MonoBehaviour , IHookable
         }
     }
 
-    public HookableMetaData TryToHook()
+    public HookableMetaData TryToGetHookableCondition(RaycastHit info)
     {
-        return  new HookableMetaData();
+        HookableMetaData data = new HookableMetaData();
+        data.Hookable = this;
+        data.OffsetPosition = Vector3.zero;
+        data.TransformToFollow = transform;
+        data.CanHook = true; 
+        
+        return  data;
+    }
+
+    public void OnHookStart()
+    {
+        _currentSpeed = 0;
+    }
+
+    public void OnHookUpdate()
+    {
+        _aliveTime -= Time.fixedDeltaTime * Blackboard.Instance.GlobalTimeMultiplier;
+    }
+
+    public void OnHookEnd()
+    {
+        _currentSpeed = _speed;
     }
 }
