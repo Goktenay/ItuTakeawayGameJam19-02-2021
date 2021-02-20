@@ -21,15 +21,19 @@ public class PlayerController : MonoBehaviour
     
     [Header("Settings")] 
     [SerializeField] private float _onGroundedMovementSpeed = 8;
-    [SerializeField] private float _onAirMovementForce = 8;
-    [SerializeField] private float _maxSwingInputForce;
-    [SerializeField] private float _tetherTentionForce = 8;
     [SerializeField] private float _jumpSpeed;
-    
+    [Space(10)]
     [SerializeField] private float _upwardsGravity;
     [SerializeField] private float _downwardsGravity;
+    [Space(10)]
+    [SerializeField] private float _tetherTentionForce = 8;
+    [SerializeField] private float _maxSwingInputForce;
     [SerializeField] private float _swingingFriction = 0.05f;
+    [SerializeField] private float _swingingMaxSpeed;
+    [Space(10)] 
+    [SerializeField] private float _onAirMovementForce = 8;
     [SerializeField] private float _isOnAirAfterSwingingxzFriction = 0.05f;
+    
     
     private Vector2Int _inputDirection = Vector2Int.zero;
     private bool _isGrounded;
@@ -259,8 +263,9 @@ public class PlayerController : MonoBehaviour
                     
                     _rigidbody.velocity = (tetherToNewPos - _rigidbody.position + _testBulletTransform.position).normalized *  _rigidbody.velocity.magnitude;
 
-                    _rigidbody.velocity -= (_rigidbody.velocity * _swingingFriction * Time.fixedDeltaTime);
-
+                    _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, _swingingMaxSpeed);
+                    _rigidbody.velocity -= (Time.fixedDeltaTime * _swingingFriction * _rigidbody.velocity);
+                    
                     //new
                 }
 

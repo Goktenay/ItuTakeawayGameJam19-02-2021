@@ -581,14 +581,15 @@ MonoBehaviour:
   _groundedRayCastTransform: {fileID: 1473328066}
   _testBulletTransform: {fileID: 1669802239}
   _onGroundedMovementSpeed: 12
-  _onAirMovementForce: 50
-  _maxSwingInputForce: 15
-  _tetherTentionForce: 20
   _jumpSpeed: 15
-  _upwardsGravity: -50
+  _upwardsGravity: -25
   _downwardsGravity: -50
+  _tetherTentionForce: 20
+  _maxSwingInputForce: 15
   _swingingFriction: 0.05
-  _isOnAirAfterSwingingxzFriction: 0
+  _swingingMaxSpeed: 50
+  _onAirMovementForce: 50
+  _isOnAirAfterSwingingxzFriction: 0.5
 --- !u!1001 &1281764404
 PrefabInstance:
   m_ObjectHideFlags: 0
