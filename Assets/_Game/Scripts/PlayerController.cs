@@ -14,7 +14,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private LayerMask _groundLayerMask;
     [SerializeField] private Transform _groundedRayCastTransform;
-
+    [SerializeField] private Transform _bulletAimTransform;
 
     [Space(10)]
     [SerializeField] private Transform _testBulletTransform;
@@ -50,10 +50,11 @@ public class PlayerController : MonoBehaviour
     private InputFlag _forwardInput = new InputFlag(KeyCode.UpArrow, KeyCode.W);
     private InputFlag _mouse0Input = new InputFlag(KeyCode.Mouse0);
     private InputFlag _mouse1Input = new InputFlag(KeyCode.Mouse1);
-    
-    
-    
-    
+
+    public Rigidbody Rigidbody => _rigidbody;
+    public Transform BulletAimTransform => _bulletAimTransform;
+
+
     // Start is called before the first frame update
     void Start()
     {
