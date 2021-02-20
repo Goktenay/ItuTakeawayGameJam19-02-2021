@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BulletBehaviour : MonoBehaviour
+public class BulletBehaviour : MonoBehaviour , IHookable
 {
     [Header("Dependencies")] 
     [SerializeField] private Rigidbody _rigidbody;
@@ -40,5 +40,10 @@ public class BulletBehaviour : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public HookableMetaData TryToHook()
+    {
+        return  new HookableMetaData();
     }
 }

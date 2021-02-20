@@ -13,6 +13,7 @@
             <e p="BulletBehaviour.cs" t="Include" />
             <e p="CameraController.cs" t="Include" />
             <e p="IdleEnemyBehaviour.cs" t="Include" />
+            <e p="IHookable.cs" t="Include" />
             <e p="InputFlag.cs" t="Include" />
             <e p="PlayerController.cs" t="Include" />
           </e>
