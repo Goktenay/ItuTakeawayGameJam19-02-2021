@@ -44,12 +44,15 @@ public class BulletBehaviour : MonoBehaviour , IHookable
         }
     }
 
-    public HookableMetaData TryToGetHookableCondition(RaycastHit info)
+    public HookableMetaData TryToGetHookableCondition(RaycastHit info, Transform hookableTempTransform)
     {
         HookableMetaData data = new HookableMetaData();
         data.Hookable = this;
-        data.OffsetPosition = Vector3.zero;
-        data.TransformToFollow = transform;
+        hookableTempTransform.SetParent(transform);
+        hookableTempTransform.position = transform.position;
+        data.TransformToFollow = hookableTempTransform;
+        
+        
         data.CanHook = true; 
         
         return  data;

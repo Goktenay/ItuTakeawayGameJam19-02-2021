@@ -17,8 +17,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private LayerMask _hookRaycastLayerMask;
     [SerializeField] private Transform _groundedRayCastTransform;
     [SerializeField] private Transform _bulletAimTransform;
-    
- 
+    [SerializeField] private RopeController _ropeController;
+    [SerializeField] private Transform _hookableTempTransform;
     
     [Header("Settings")] 
     [SerializeField] private float _onGroundedMovementSpeed = 8;
@@ -63,6 +63,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _ropeController.SetActivateRope(false, null);
                 
     }
 
@@ -227,11 +228,15 @@ public class PlayerController : MonoBehaviour
 
             void CalculateIsReadyToHook()
             {
-                bool isReadyToHookLocal = _isReadyToHook; 
+                bool isReadyToHookLocal = _isReadyToHook;
+                
                 
                 _isReadyToHook = false;
                 if (!_isSwinging)
                 {
+
+                    
+                    
                     Ray ray = new Ray(_cameraController.transform.position, _cameraController.ForwardVector);
 
                     if (Physics.Raycast(ray, out RaycastHit hitInfo, _hookableDistance, _hookRaycastLayerMask))
@@ -240,13 +245,12 @@ public class PlayerController : MonoBehaviour
 
                         if (hookable != null)
                         {
-                            HookableMetaData data = hookable.TryToGetHookableCondition(hitInfo);
+                            HookableMetaData data = hookable.TryToGetHookableCondition(hitInfo, _hookableTempTransform);
                             if (data.CanHook)
                             {
                                 _isReadyToHook = true;
-                                
                                 _hookableMeta = data;
-                              //  Debug.Log("I CAN HOOOK");
+                                //  Debug.Log("I CAN HOOOK");
                             }
                         }
                         else
@@ -296,7 +300,8 @@ public class PlayerController : MonoBehaviour
                 void SwingInputStartActions()
                 {
                     _hookableMeta.Hookable.OnHookStart();
-                    _maxTetherLength = (_rigidbody.position - _hookableMeta.GetPosition()).magnitude;
+                    _ropeController.SetActivateRope(true, _hookableMeta.TransformToFollow);
+                    _maxTetherLength = (_rigidbody.position - _hookableMeta.TransformToFollow.position).magnitude;
                     _isOnAirAfterSwinging = false;
                     _isSwinging = true;
                 }
@@ -306,8 +311,8 @@ public class PlayerController : MonoBehaviour
                     _hookableMeta.Hookable.OnHookUpdate();
                      _isOnGroundedAfterSwinging = false;
                      
-                    Debug.DrawLine(_rigidbody.position, _hookableMeta.GetPosition(), Color.green);
-                    Debug.DrawRay(_rigidbody.position, _rigidbody.velocity, Color.red);
+                  //  Debug.DrawLine(_rigidbody.position, _hookableMeta.TransformToFollow.position, Color.green);
+                  //  Debug.DrawRay(_rigidbody.position, _rigidbody.velocity, Color.red);
                     Vector3 forwardVec = _cameraController.ForwardVector;
                     Vector3 rightVec = _cameraController.RightVector;
 
@@ -320,11 +325,11 @@ public class PlayerController : MonoBehaviour
 
                     if (_isGrounded)
                     {
-                        _rigidbody.AddForce( (_hookableMeta.GetPosition() - _rigidbody.position).normalized * _tetherTentionForce, ForceMode.Acceleration );
+                        _rigidbody.AddForce( (_hookableMeta.TransformToFollow.position - _rigidbody.position).normalized * _tetherTentionForce, ForceMode.Acceleration );
                     }
                     
                     Vector3 newPos = _rigidbody.position + _rigidbody.velocity * Time.fixedDeltaTime;
-                    Vector3 tetherToNewPos = (newPos - _hookableMeta.GetPosition());
+                    Vector3 tetherToNewPos = (newPos - _hookableMeta.TransformToFollow.position);
                     tetherToNewPos = Vector3.ClampMagnitude(tetherToNewPos, _maxTetherLength);
 
                     if (tetherToNewPos.magnitude < _maxTetherLength)
@@ -333,7 +338,7 @@ public class PlayerController : MonoBehaviour
                     }
                     
                     
-                    _rigidbody.velocity = (tetherToNewPos - _rigidbody.position + _hookableMeta.GetPosition()).normalized *  _rigidbody.velocity.magnitude;
+                    _rigidbody.velocity = (tetherToNewPos - _rigidbody.position + _hookableMeta.TransformToFollow.position).normalized *  _rigidbody.velocity.magnitude;
 
                     _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, _swingingMaxSpeed);
                     _rigidbody.velocity -= (Time.fixedDeltaTime * _swingingFriction * _rigidbody.velocity);
@@ -342,6 +347,7 @@ public class PlayerController : MonoBehaviour
                 
                 void SwingInputEndActions()
                 {
+                    _ropeController.SetActivateRope(false, null);
                     _hookableMeta.Hookable.OnHookEnd();
                     _isSwinging = false;
                     _isOnAirAfterSwinging = true;
@@ -394,12 +400,6 @@ public class PlayerController : MonoBehaviour
         SetInputFlags();
         CalculateTimeSlowDown();
         
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        }
-        
-        
         void CalculateTimeSlowDown()
         {
             if (_qInput.Start)
@@ -411,7 +411,6 @@ public class PlayerController : MonoBehaviour
                     // Blackboard.Instance.GlobalTimeMultiplier = value;
                     Time.timeScale = value;
                     Time.fixedDeltaTime = 0.02f * value;
-                    Debug.Log("In - " +value);
                 }).SetEase(Ease.OutSine).SetId("SlowDownTween");
                     
                  
@@ -422,7 +421,6 @@ public class PlayerController : MonoBehaviour
                 DOTween.Kill("SlowDownTween");
                 DOVirtual.Float(Time.timeScale, 1f, 0.1f, value =>
                 {
-                    Debug.Log("Out - " +value);
                     Time.timeScale = value;
                     Time.fixedDeltaTime = 0.02f * value;
                 }).SetUpdate(UpdateType.Normal)

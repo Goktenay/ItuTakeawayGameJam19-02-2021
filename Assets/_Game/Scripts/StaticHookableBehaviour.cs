@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HookableWallBehaviour : MonoBehaviour, IHookable
+public class StaticHookableBehaviour : MonoBehaviour, IHookable
 {
     // Start is called before the first frame update
     void Start()
@@ -20,13 +20,11 @@ public class HookableWallBehaviour : MonoBehaviour, IHookable
     {
         HookableMetaData data = new HookableMetaData();
         data.Hookable = this;
+        hookableTempTransform.SetParent(transform);
+        hookableTempTransform.position = transform.position;
+        data.TransformToFollow = hookableTempTransform;
         data.CanHook = true;
-    
-        hookableTempTransform.transform.position = info.point;
-        hookableTempTransform.transform.SetParent(transform);
-        
-        data.TransformToFollow = hookableTempTransform.transform;
-        return data;
+        return  data;
     }
 
     public void OnHookStart()

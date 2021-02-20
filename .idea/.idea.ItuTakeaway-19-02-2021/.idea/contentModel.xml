@@ -19,6 +19,8 @@
             <e p="IHookable.cs" t="Include" />
             <e p="InputFlag.cs" t="Include" />
             <e p="PlayerController.cs" t="Include" />
+            <e p="RopeController.cs" t="Include" />
+            <e p="StaticHookableBehaviour.cs" t="Include" />
           </e>
         </e>
         <e p="Plugins" t="Include">

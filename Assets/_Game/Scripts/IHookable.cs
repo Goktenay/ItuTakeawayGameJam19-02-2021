@@ -4,7 +4,8 @@ using UnityEngine;
 
 public interface IHookable
 {
-    HookableMetaData TryToGetHookableCondition(RaycastHit info);
+    
+    HookableMetaData TryToGetHookableCondition(RaycastHit info, Transform hookableTempTransform);
     
     void OnHookStart();
     void OnHookUpdate();
@@ -17,22 +18,13 @@ public class HookableMetaData
 {
     public IHookable Hookable;
     public bool CanHook;
-    public Vector3 OffsetPosition;
+
     public Transform TransformToFollow;
 
-    public Vector3 GetPosition()
-    {
-        Vector3 pos = OffsetPosition;
+    private int _registerCount;
+    
 
-        if (TransformToFollow != null)
-        {
-            pos += TransformToFollow.position;
-        }
-
-        return pos;
-
-    }
-
+    
 }
 
 
