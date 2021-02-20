@@ -34,9 +34,9 @@ public class BulletBehaviour : MonoBehaviour , IHookable
 
     private void FixedUpdate()
     {
-        _rigidbody.MovePosition(_rigidbody.position + Blackboard.Instance.GlobalTimeMultiplier* Time.fixedDeltaTime * _currentSpeed * _direction);
+        _rigidbody.MovePosition(_rigidbody.position + Time.fixedDeltaTime * _currentSpeed * _direction);
 
-        _aliveTime += Time.fixedDeltaTime * Blackboard.Instance.GlobalTimeMultiplier;
+        _aliveTime += Time.fixedDeltaTime;
 
         if (_aliveTime > _lifespan)
         {
@@ -62,7 +62,7 @@ public class BulletBehaviour : MonoBehaviour , IHookable
 
     public void OnHookUpdate()
     {
-        _aliveTime -= Time.fixedDeltaTime * Blackboard.Instance.GlobalTimeMultiplier;
+        _aliveTime -= Time.fixedDeltaTime ;
     }
 
     public void OnHookEnd()

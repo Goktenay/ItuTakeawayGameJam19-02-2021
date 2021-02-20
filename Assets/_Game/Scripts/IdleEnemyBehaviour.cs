@@ -32,7 +32,7 @@ public class IdleEnemyBehaviour : MonoBehaviour
             _rotationPivotTransform.rotation =
                 Quaternion.Lerp(_rotationPivotTransform.rotation,
                     Quaternion.LookRotation(transformToPlayer),
-                    Time.deltaTime * _rotateTowardsPlayerLerpSpeed * Blackboard.Instance.GlobalTimeMultiplier);
+                    Time.deltaTime * _rotateTowardsPlayerLerpSpeed );
 
             if (_timer > _bulletSpawnCooldown)
             {
@@ -43,7 +43,7 @@ public class IdleEnemyBehaviour : MonoBehaviour
         }
 
 
-        _timer += Time.deltaTime * Blackboard.Instance.GlobalTimeMultiplier;
+        _timer += Time.deltaTime;
     }
 
     private void SpawnBullet()

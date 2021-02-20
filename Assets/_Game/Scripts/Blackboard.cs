@@ -25,17 +25,20 @@ public class Blackboard : MonoBehaviour
     #endregion
 
 
-    [Header("Dependencies")] 
-    [SerializeField] private float _globalTimeMultiplier;
     
     
     private PlayerController _playerController;
     private Transform _cameraTransform;
 
     private CursorController _cursorController;
-    public float GlobalTimeMultiplier => _globalTimeMultiplier;
+
+    
+    
 
 
+
+    
+    
     public PlayerController PlayerController
     {
         get
@@ -73,7 +76,6 @@ public class Blackboard : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
     }
 
     // Update is called once per frame
@@ -81,4 +83,6 @@ public class Blackboard : MonoBehaviour
     {
         
     }
+
+
 }

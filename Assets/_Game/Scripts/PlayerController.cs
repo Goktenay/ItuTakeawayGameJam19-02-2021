@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using SEP;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -52,6 +53,7 @@ public class PlayerController : MonoBehaviour
     private InputFlag _forwardInput = new InputFlag(KeyCode.UpArrow, KeyCode.W);
     private InputFlag _mouse0Input = new InputFlag(KeyCode.Mouse0);
     private InputFlag _mouse1Input = new InputFlag(KeyCode.Mouse1);
+    private InputFlag _qInput = new InputFlag(KeyCode.Q);
 
     public Rigidbody Rigidbody => _rigidbody;
     public Transform BulletAimTransform => _bulletAimTransform;
@@ -81,6 +83,7 @@ public class PlayerController : MonoBehaviour
             CalculateGravity();
             CalculateIsReadyToHook();
             CalculateSwing();
+          
 
             
             
@@ -192,7 +195,6 @@ public class PlayerController : MonoBehaviour
                     _isGrounded = false;
                 }
             }
-            
             
             void CalculateOnGrounded()
             {
@@ -368,6 +370,7 @@ public class PlayerController : MonoBehaviour
                 }
                 
             }
+
             
         }
         
@@ -380,6 +383,7 @@ public class PlayerController : MonoBehaviour
             _backInput.ResetStartEndFlags();
             _mouse0Input.ResetStartEndFlags();
             _mouse1Input.ResetStartEndFlags();
+            _qInput.ResetStartEndFlags();
         }
     }
 
@@ -388,11 +392,47 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         SetInputFlags();
-
+        CalculateTimeSlowDown();
+        
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
         }
+        
+        
+        void CalculateTimeSlowDown()
+        {
+            if (_qInput.Start)
+            {
+                DOTween.Kill("SlowDownTween");
+                
+                DOVirtual.Float(Time.timeScale, 0.1f, 0.2f, value =>
+                {
+                    // Blackboard.Instance.GlobalTimeMultiplier = value;
+                    Time.timeScale = value;
+                    Time.fixedDeltaTime = 0.02f * value;
+                    Debug.Log("In - " +value);
+                }).SetEase(Ease.OutSine).SetId("SlowDownTween");
+                    
+                 
+            }
+
+            if (_qInput.End)
+            {
+                DOTween.Kill("SlowDownTween");
+                DOVirtual.Float(Time.timeScale, 1f, 0.1f, value =>
+                {
+                    Debug.Log("Out - " +value);
+                    Time.timeScale = value;
+                    Time.fixedDeltaTime = 0.02f * value;
+                }).SetUpdate(UpdateType.Normal)
+                    .SetEase(Ease.InSine).SetId("SlowDownTween");
+            }
+                
+            
+            _qInput.ResetStartEndFlags();
+        }
+        
         
         void SetInputFlags()
         {
@@ -408,6 +448,7 @@ public class PlayerController : MonoBehaviour
                 _jumpInput.SetFlags();
                 _mouse0Input.SetFlags();
                 _mouse1Input.SetFlags();
+                _qInput.SetFlags();
 
             }
             void ResetInputUpdateFlags()
@@ -419,6 +460,7 @@ public class PlayerController : MonoBehaviour
                 _jumpInput.Update = false;
                 _mouse0Input.Update = false;
                 _mouse1Input.Update = false;
+                _qInput.Update = false;
             }
             
         }
