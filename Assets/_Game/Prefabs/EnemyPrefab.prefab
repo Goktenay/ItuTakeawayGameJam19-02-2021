@@ -173,7 +173,7 @@ MonoBehaviour:
   _bulletPrefab: {fileID: 2888172530769087788, guid: 11dc86ea23c60394d9c3146c82442816,
     type: 3}
   _rotateTowardsPlayerLerpSpeed: 5
-  _bulletSpawnCooldown: 3
+  _bulletSpawnCooldown: 0.5
   _playerStartShootingTriggerRadius: 90.3
 --- !u!1001 &7046547971673443561
 PrefabInstance:

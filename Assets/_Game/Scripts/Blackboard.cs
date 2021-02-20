@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -24,19 +25,23 @@ public class Blackboard : MonoBehaviour
     }
 
     #endregion
-    
-    
-    
+
+    [Header("Settings")] 
+    [SerializeField] private Color _hookableColor;
+    [SerializeField] private Color _enemyColor;
+
+
+
     private PlayerController _playerController;
     private Transform _cameraTransform;
 
     private CursorController _cursorController;
 
     
-    
 
-
-
+    private Tween _timeTween;
+    private Tween _timeShaderTween;
+    private int _SlowTimeGlobalValueShaderId;
     
     
     public PlayerController PlayerController
@@ -76,12 +81,16 @@ public class Blackboard : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-     
+        _SlowTimeGlobalValueShaderId = Shader.PropertyToID("_SlowTimeGlobalValue");
+        Shader.SetGlobalColor("_HookableColor", _hookableColor);
+        Shader.SetGlobalColor("_EnemyColor", _enemyColor);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+  
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             SceneManager.LoadScene(0);
@@ -89,4 +98,58 @@ public class Blackboard : MonoBehaviour
     }
 
 
+    public void SlowTime()
+    {
+        if (_timeTween != null)
+        {
+            _timeTween.Kill();
+        }
+
+        if (_timeShaderTween != null)
+        {
+            _timeShaderTween.Kill();
+        }
+        
+
+        _timeShaderTween = DOVirtual.Float(Shader.GetGlobalFloat(_SlowTimeGlobalValueShaderId), 1f, 0.1f, value =>
+            {
+                Shader.SetGlobalFloat(_SlowTimeGlobalValueShaderId,value );
+            }).SetUpdate(UpdateType.Late)
+            .SetEase(Ease.InSine);
+        
+        _timeTween = DOVirtual.Float(Time.timeScale, 0.1f, 0.2f, value =>
+        {
+            Time.timeScale = value;
+            Time.fixedDeltaTime = 0.02f * value;
+        }).SetUpdate(UpdateType.Late).SetEase(Ease.OutSine);
+
+    }
+
+    public void SpeedTime()
+    {
+        if (_timeTween != null)
+        {
+            _timeTween.Kill();
+        }
+        
+        if (_timeShaderTween != null)
+        {
+            _timeShaderTween.Kill();
+        }
+        
+        _timeShaderTween = DOVirtual.Float(Shader.GetGlobalFloat(_SlowTimeGlobalValueShaderId), 0f, 0.1f, value =>
+            {
+                Shader.SetGlobalFloat(_SlowTimeGlobalValueShaderId,value );
+            }).SetUpdate(UpdateType.Late)
+            .SetEase(Ease.InSine);
+        
+        _timeTween = DOVirtual.Float(Time.timeScale, 1f, 0.1f, value =>
+            {
+         
+                Time.timeScale = value;
+                Time.fixedDeltaTime = 0.02f * value;
+            }).SetUpdate(UpdateType.Late)
+            .SetEase(Ease.InSine);
+    }
+    
 }

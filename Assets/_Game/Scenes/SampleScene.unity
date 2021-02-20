@@ -246,6 +246,7 @@ MonoBehaviour:
   _image: {fileID: 45381905}
   _hookableColor: {r: 0.5535364, g: 0, b: 1, a: 1}
   _defaultColor: {r: 1, g: 1, b: 1, a: 1}
+  _hookedColor: {r: 1, g: 0.5689324, b: 0, a: 1}
 --- !u!1001 &125763076
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -563,8 +564,8 @@ MonoBehaviour:
       colorBlindnessType: 0
       colorBlindnessStrength: 1
   m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
-  m_ShowToolkit: 0
-  m_ShowCustomSorter: 0
+  m_ShowToolkit: 1
+  m_ShowCustomSorter: 1
   breakBeforeColorGrading: 0
   m_BeforeTransparentBundles: []
   m_BeforeStackBundles: []

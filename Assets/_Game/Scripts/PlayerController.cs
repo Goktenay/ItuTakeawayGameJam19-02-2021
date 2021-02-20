@@ -84,7 +84,7 @@ public class PlayerController : MonoBehaviour
             CalculateGravity();
             CalculateIsReadyToHook();
             CalculateSwing();
-          
+            
 
             
             
@@ -229,14 +229,9 @@ public class PlayerController : MonoBehaviour
             void CalculateIsReadyToHook()
             {
                 bool isReadyToHookLocal = _isReadyToHook;
-                
-                
                 _isReadyToHook = false;
                 if (!_isSwinging)
                 {
-
-                    
-                    
                     Ray ray = new Ray(_cameraController.transform.position, _cameraController.ForwardVector);
 
                     if (Physics.Raycast(ray, out RaycastHit hitInfo, _hookableDistance, _hookRaycastLayerMask))
@@ -250,22 +245,24 @@ public class PlayerController : MonoBehaviour
                             {
                                 _isReadyToHook = true;
                                 _hookableMeta = data;
-                                //  Debug.Log("I CAN HOOOK");
                             }
+
+                            
                         }
                         else
                         {
                             Debug.LogError("ERROR this shouldnt happen -> " + hitInfo.collider.gameObject.name);
                         }
                     }
-                }
-
-                if (isReadyToHookLocal != _isReadyToHook)
-                {
-                    // state Change
-                    Blackboard.Instance.CursorController.OnReadyToHookStateChange(_isReadyToHook);
+                    
+                    
+                    if (_isReadyToHook != isReadyToHookLocal)
+                    {
+                        Blackboard.Instance.CursorController.OnReadyToHookStateChange(_isReadyToHook ? HookCursorEnum.ReadyToHook : HookCursorEnum.NotHookable);
+                    }
                     
                 }
+                
                 
                 
             }
@@ -300,6 +297,7 @@ public class PlayerController : MonoBehaviour
                 void SwingInputStartActions()
                 {
                     _hookableMeta.Hookable.OnHookStart();
+                    Blackboard.Instance.CursorController.OnReadyToHookStateChange(HookCursorEnum.Hooked);
                     _ropeController.SetActivateRope(true, _hookableMeta.TransformToFollow);
                     _maxTetherLength = (_rigidbody.position - _hookableMeta.TransformToFollow.position).magnitude;
                     _isOnAirAfterSwinging = false;
@@ -351,6 +349,11 @@ public class PlayerController : MonoBehaviour
                     _hookableMeta.Hookable.OnHookEnd();
                     _isSwinging = false;
                     _isOnAirAfterSwinging = true;
+                    Blackboard.Instance.CursorController.OnReadyToHookStateChange(HookCursorEnum.NotHookable);
+
+                    CalculateIsReadyToHook();
+                    
+                  
                 }
                 
                 
@@ -404,27 +407,12 @@ public class PlayerController : MonoBehaviour
         {
             if (_qInput.Start)
             {
-                DOTween.Kill("SlowDownTween");
-                
-                DOVirtual.Float(Time.timeScale, 0.1f, 0.2f, value =>
-                {
-                    // Blackboard.Instance.GlobalTimeMultiplier = value;
-                    Time.timeScale = value;
-                    Time.fixedDeltaTime = 0.02f * value;
-                }).SetEase(Ease.OutSine).SetId("SlowDownTween");
-                    
-                 
+                Blackboard.Instance.SlowTime();
             }
 
             if (_qInput.End)
             {
-                DOTween.Kill("SlowDownTween");
-                DOVirtual.Float(Time.timeScale, 1f, 0.1f, value =>
-                {
-                    Time.timeScale = value;
-                    Time.fixedDeltaTime = 0.02f * value;
-                }).SetUpdate(UpdateType.Normal)
-                    .SetEase(Ease.InSine).SetId("SlowDownTween");
+                Blackboard.Instance.SpeedTime();
             }
                 
             
