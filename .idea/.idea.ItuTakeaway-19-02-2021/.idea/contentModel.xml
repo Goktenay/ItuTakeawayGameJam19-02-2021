@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ContentModelStore">
+    <e p="C:\Users\Alpago\.Rider2019.2\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Alpago\.Rider2019.2\system\resharper-host\local\Transient\ReSharperHost\v192\SolutionCaches\_ItuTakeaway-19-02-2021.-187022128.00" t="ExcludeRecursive" />
+    <e p="C:\Users\Alpago\Desktop\MyProjeccts\ItuTakeaway-19-02-2021" t="IncludeRecursive">
+      <e p="Assembly-CSharp-Editor.csproj" t="IncludeRecursive" />
+      <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
+      <e p="Assets" t="Include">
+        <e p="_Game" t="Include">
+          <e p="Scripts" t="Include">
+            <e p="CameraController.cs" t="Include" />
+            <e p="InputFlag.cs" t="Include" />
+            <e p="PlayerController.cs" t="Include" />
+          </e>
+        </e>
+        <e p="PolygonPrototype" t="Include">
+          <e p="Shaders" t="Include">
+            <e p="Prototype_Glass_Global.shader" t="Include" />
+            <e p="Prototype_Glass_Object.shader" t="Include" />
+            <e p="Prototype_Global.shader" t="Include" />
+            <e p="Prototype_Object.shader" t="Include" />
+          </e>
+        </e>
+        <e p="Tutorial_Info" t="Include">
+          <e p="Scripts" t="Include">
+            <e p="Editor" t="Include">
+              <e p="ReadmeEditor.cs" t="Include" />
+            </e>
+            <e p="Readme.cs" t="Include" />
+          </e>
+        </e>
+      </e>
+      <e p="ItuTakeaway-19-02-2021.sln" t="IncludeFlat" />
+      <e p="obj" t="ExcludeRecursive" />
+      <e p="Packages" t="ExcludeRecursive" />
+      <e p="Temp\bin" t="ExcludeRecursive" />
+    </e>
+  </component>
+</project>
