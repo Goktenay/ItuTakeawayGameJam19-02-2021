@@ -130,7 +130,7 @@ MeshCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7046547971673541193}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: b2e4506caa12ee0488eff2b2a87d46f8, type: 2}
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 4
@@ -244,7 +244,7 @@ GameObject:
   - component: {fileID: 7046547972545624256}
   - component: {fileID: 8484733762793071582}
   m_Layer: 0
-  m_Name: EnemyPrefab
+  m_Name: EnemyPrefab-HookableBullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

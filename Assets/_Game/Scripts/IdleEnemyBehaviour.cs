@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class IdleEnemyBehaviour : MonoBehaviour , IHookable
 {
@@ -133,6 +134,7 @@ public class IdleEnemyBehaviour : MonoBehaviour , IHookable
             _isDefeated = true;
             Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
             _rigidbody.AddForce(_playerHitRay.direction * 1000, ForceMode.Force);
+            _rigidbody.AddTorque(Random.insideUnitSphere * 1000, ForceMode.Force);
         }
 
     }
