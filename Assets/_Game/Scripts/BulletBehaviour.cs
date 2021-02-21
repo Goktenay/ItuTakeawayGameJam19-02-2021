@@ -29,7 +29,7 @@ public class BulletBehaviour : MonoBehaviour , IHookable
     // Start is called before the first frame update
     void Start()
     {
-        
+        Blackboard.Instance.OnPlayerKilledEvent += OnPlayerKilledActions;
     }
 
     private void FixedUpdate()
@@ -49,6 +49,8 @@ public class BulletBehaviour : MonoBehaviour , IHookable
 
     private void OnDestroy()
     {
+        Blackboard.Instance.OnPlayerKilledEvent -= OnPlayerKilledActions;
+        
         if (_tempTransform != null)
         {
             OnHookEnd(_tempTransform);
@@ -81,4 +83,10 @@ public class BulletBehaviour : MonoBehaviour , IHookable
         hookTransform.SetParent(null);
         _tempTransform = null;
     }
+
+    private void OnPlayerKilledActions()
+    {
+        Destroy(gameObject);
+    }
+    
 }

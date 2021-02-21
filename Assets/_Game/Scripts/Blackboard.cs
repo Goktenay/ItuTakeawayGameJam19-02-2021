@@ -31,7 +31,10 @@ public class Blackboard : MonoBehaviour
     [SerializeField] private Color _enemyColor;
     [SerializeField] private Color _enemySpawnerColor;
 
-
+    public delegate void OnPlayerKilledDelegate();
+    public event OnPlayerKilledDelegate OnPlayerKilledEvent;
+    
+    
     private PlayerController _playerController;
     private Transform _cameraTransform;
 
@@ -161,5 +164,12 @@ public class Blackboard : MonoBehaviour
             }).SetUpdate(UpdateType.Late)
             .SetEase(Ease.InSine);
     }
+
+    public void OnPlayerKilled()
+    {
+        OnPlayerKilledEvent?.Invoke();
+
+    }
+    
     
 }

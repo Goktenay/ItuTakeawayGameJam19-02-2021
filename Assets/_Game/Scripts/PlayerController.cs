@@ -59,22 +59,44 @@ public class PlayerController : MonoBehaviour
     public Transform BulletAimTransform => _bulletAimTransform;
 
     private IHookable _currentHookable;
+
+    private Vector3 _lastGroundedPosition;
     
     // Start is called before the first frame update
     void Start()
     {
+        _lastGroundedPosition = transform.position;
         _ropeController.SetActivateRope(false, null);
                 
     }
 
     private void FixedUpdate()
     {
+
+        CalculateFallDeath();
         MovementCalculations();
         ResetInputStartEndFlags();
-
+    
         
         
         //////////////////////////////////
+
+        void CalculateFallDeath()
+        {
+
+            if (_rigidbody.position.y < -20)
+            {
+                Blackboard.Instance.OnPlayerKilled();
+                _rigidbody.position = _lastGroundedPosition;
+                _rigidbody.velocity = Vector3.zero;
+
+                if (_isSwinging)
+                {
+                    SwingInputEndActions();
+                }
+            }
+        }
+        
         void MovementCalculations()
         {
             CalculateInputDirection();
@@ -208,7 +230,9 @@ public class PlayerController : MonoBehaviour
                     if (_rigidbody.velocity.y <= 0)
                     {
                         _isGrounded = true;
-
+                        _lastGroundedPosition = transform.position;
+                        
+                        
                         if (!_isSwinging)
                         {
                             _isOnGroundedAfterSwinging = true; 
@@ -303,23 +327,7 @@ public class PlayerController : MonoBehaviour
                         
                 }
                 
-                void SwingInputEndActions()
-                {
-                    _ropeController.SetActivateRope(false, null);
-                    _currentHookable?.OnHookEnd(_hookableTempTransform);
-                    _isSwinging = false;
-                    _isOnAirAfterSwinging = true;
-                    Blackboard.Instance.CursorController.OnReadyToHookStateChange(HookCursorEnum.NotHookable);
-
-                    CalculateIsReadyToHook();
-                    
-                  
-                }
                 
-                
-                
-                
-
                 if (_isOnAirAfterSwinging)
                 {
                     
@@ -356,6 +364,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    void SwingInputEndActions()
+    {
+        _ropeController.SetActivateRope(false, null);
+        _currentHookable?.OnHookEnd(_hookableTempTransform);
+        _isSwinging = false;
+        _isOnAirAfterSwinging = true;
+        Blackboard.Instance.CursorController.OnReadyToHookStateChange(HookCursorEnum.NotHookable);
+
+        CalculateIsReadyToHook();
+                    
+                  
+    }
     
     void CalculateIsReadyToHook()
     {
@@ -404,6 +424,11 @@ public class PlayerController : MonoBehaviour
     {
         SetInputFlags();
         CalculateTimeSlowDown();
+
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            _rigidbody.position = _lastGroundedPosition;
+        }
         
         void CalculateTimeSlowDown()
         {
@@ -463,11 +488,7 @@ public class PlayerController : MonoBehaviour
 
     public void OnAttachedHookableObjectDestroyed()
     {
-        _ropeController.SetActivateRope(false, null);
-        _isSwinging = false;
-        _isOnAirAfterSwinging = true;
-        Blackboard.Instance.CursorController.OnReadyToHookStateChange(HookCursorEnum.NotHookable);
-        CalculateIsReadyToHook();
+       SwingInputEndActions();
        
     }
 }
