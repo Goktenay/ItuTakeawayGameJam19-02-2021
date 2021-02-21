@@ -28,7 +28,8 @@ public class Blackboard : MonoBehaviour
 
     [Header("Settings")] 
     [SerializeField] private Color _hookableColor;
-    [SerializeField] private Color _enemyColor;
+    [SerializeField] private Color _nonHookableBulletColor;
+    [SerializeField] private Color _hookableBulletColor;
     [SerializeField] private Color _enemySpawnerColor;
 
     public delegate void OnPlayerKilledDelegate();
@@ -46,6 +47,28 @@ public class Blackboard : MonoBehaviour
     private Tween _timeShaderTween;
     private int _SlowTimeGlobalValueShaderId;
     
+    
+    // Start is called before the first frame update
+    void Start()
+    {
+        // Hide and lock cursor when right mouse button pressed
+        
+
+        // Unlock and show cursor when right mouse button released
+  
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        
+        
+        _SlowTimeGlobalValueShaderId = Shader.PropertyToID("_SlowTimeGlobalValue");
+        Shader.SetGlobalColor("_HookableColor", _hookableColor);
+        Shader.SetGlobalColor("_NonHookableBulletColor", _nonHookableBulletColor);
+        Shader.SetGlobalColor("_HookableBulletColor", _hookableBulletColor);
+     
+        Shader.SetGlobalColor("_EnemySpawnerColor", _enemySpawnerColor);
+        
+    }
+
     
     public PlayerController PlayerController
     {
@@ -81,24 +104,6 @@ public class Blackboard : MonoBehaviour
 
     
     
-    // Start is called before the first frame update
-    void Start()
-    {
-        // Hide and lock cursor when right mouse button pressed
-        
-
-        // Unlock and show cursor when right mouse button released
-  
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-        
-        
-        _SlowTimeGlobalValueShaderId = Shader.PropertyToID("_SlowTimeGlobalValue");
-        Shader.SetGlobalColor("_HookableColor", _hookableColor);
-        Shader.SetGlobalColor("_EnemyColor", _enemyColor);
-        Shader.SetGlobalColor("_EnemySpawnerColor", _enemySpawnerColor);
-        
-    }
 
     // Update is called once per frame
     void Update()

@@ -24,8 +24,9 @@
           </e>
           <e p="Shaders" t="Include">
             <e p="EnemySpawnerShader.shader" t="Include" />
-            <e p="HookableEnemyShader.shader" t="Include" />
+            <e p="HookableBulletShader.shader" t="Include" />
             <e p="HookableStaticShader.shader" t="Include" />
+            <e p="NonHookableBulletShader.shader" t="Include" />
             <e p="Prototype_Global 1.shader" t="Include" />
             <e p="SkyboxShader.shader" t="Include" />
           </e>

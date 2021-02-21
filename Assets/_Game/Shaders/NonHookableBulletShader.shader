@@ -1,4 +1,4 @@
-﻿Shader "Custom/HookableStaticShader"
+﻿Shader "Custom/NonHookableBulletShader"
 {
     Properties
     {
@@ -37,13 +37,13 @@
             // put more per-instance properties here
         UNITY_INSTANCING_BUFFER_END(Props)
          float _SlowTimeGlobalValue;
-         float4 _EnemyColor;
+         float4 _NonHookableBulletColor;
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
             // Albedo comes from a texture tinted by color
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
             o.Albedo = c.rgb * (1-_SlowTimeGlobalValue);
-            o.Emission = _EnemyColor * _SlowTimeGlobalValue * 15;
+            o.Emission = _NonHookableBulletColor * _SlowTimeGlobalValue * 15;
             // Metallic and smoothness come from slider variables
             
             
