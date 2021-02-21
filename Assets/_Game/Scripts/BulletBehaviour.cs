@@ -7,11 +7,13 @@ public class BulletBehaviour : MonoBehaviour , IHookable
 {
     [Header("Dependencies")] 
     [SerializeField] private Rigidbody _rigidbody;
-
+    
+    
     [Header("Settings")] 
     [SerializeField] private float _speed;
     [SerializeField] private float _lifespan;
-
+    [SerializeField] private bool _isHookable;
+    
     private float _currentSpeed;
 
     private Vector3 _direction;
@@ -61,7 +63,15 @@ public class BulletBehaviour : MonoBehaviour , IHookable
 
     public bool TryToGetHookableCondition(RaycastHit info, Ray ray)
     {
-        return true;
+        if (_isHookable)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+        
     }
 
     public void OnHookStart(Transform hookTransform)
@@ -88,5 +98,12 @@ public class BulletBehaviour : MonoBehaviour , IHookable
     {
         Destroy(gameObject);
     }
-    
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Surface"))
+        {
+            Destroy(gameObject);
+        }
+    }
 }

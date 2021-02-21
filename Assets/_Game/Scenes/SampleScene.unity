@@ -1162,11 +1162,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 23183868838966038, guid: 8767d9ea8dddf69429fb6c89e304be40,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 93c75de3325fbb2409e71e058655d8b7, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8767d9ea8dddf69429fb6c89e304be40, type: 3}
 --- !u!1 &1526980365
@@ -1739,7 +1734,7 @@ GameObject:
   - component: {fileID: 1982686224}
   m_Layer: 0
   m_Name: HookableWall
-  m_TagString: Untagged
+  m_TagString: Surface
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295
@@ -1771,6 +1766,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7cd8e3ab48e40734ebd648d20e3e970a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hookableDistance: 20
 --- !u!64 &1982686225
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1925,7 +1921,7 @@ GameObject:
   - component: {fileID: 64081619318846074}
   m_Layer: 10
   m_Name: HookMesh
-  m_TagString: Untagged
+  m_TagString: Surface
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 4294967295

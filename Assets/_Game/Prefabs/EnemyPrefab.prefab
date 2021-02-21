@@ -279,7 +279,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _rotationPivotTransform: {fileID: 7046547972478467920}
   _bulletSpawnTransform: {fileID: 7046547971495448819}
-  _bulletPrefab: {fileID: 2888172530769087788, guid: 11dc86ea23c60394d9c3146c82442816,
+  _bulletPrefab: {fileID: 2888172530769087788, guid: 57069b044b180c145906f25de3206d4b,
     type: 3}
   _rigidbody: {fileID: 8484733762793071582}
   _rotateTowardsPlayerLerpSpeed: 5
