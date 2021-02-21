@@ -64,6 +64,7 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        Blackboard.Instance.OnPlayerAction(PlayerActionCool.WakesUp);
         _lastGroundedPosition = transform.position;
         _ropeController.SetActivateRope(false, null);
                 
@@ -86,6 +87,7 @@ public class PlayerController : MonoBehaviour
             if (_rigidbody.position.y < -20)
             {
                     OnPlayerIsDead();
+                    Blackboard.Instance.OnPlayerAction(PlayerActionCool.Falls);
             }
         }
         
@@ -227,6 +229,7 @@ public class PlayerController : MonoBehaviour
                         
                         if (!_isSwinging)
                         {
+                            
                             _isOnGroundedAfterSwinging = true; 
                             _isOnAirAfterSwinging = false;
                         }
@@ -251,7 +254,7 @@ public class PlayerController : MonoBehaviour
                     if (_mouse0Input.Start)
                     {
                         SwingInputStartActions();
-                     
+                        Blackboard.Instance.OnPlayerAction(PlayerActionCool.Swings);
                     }
                 }
 
@@ -427,6 +430,7 @@ public class PlayerController : MonoBehaviour
             if (_qInput.Start)
             {
                 Blackboard.Instance.SlowTime();
+                Blackboard.Instance.OnPlayerAction(PlayerActionCool.SlowsTime);
             }
 
             if (_qInput.End)
@@ -499,6 +503,7 @@ public class PlayerController : MonoBehaviour
         if (other.gameObject.CompareTag("Bullet"))
         {
             OnPlayerIsDead();
+            Blackboard.Instance.OnPlayerAction(PlayerActionCool.GetHitsByABullet);
         }
     }
 }

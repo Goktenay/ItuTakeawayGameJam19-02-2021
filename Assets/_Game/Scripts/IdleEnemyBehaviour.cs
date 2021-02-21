@@ -123,6 +123,7 @@ public class IdleEnemyBehaviour : MonoBehaviour , IHookable
         hookTransform.SetParent(transform);
         hookTransform.localPosition = Vector3.zero;
         _tempTransform = hookTransform;
+        
 
     }
 
@@ -130,6 +131,7 @@ public class IdleEnemyBehaviour : MonoBehaviour , IHookable
     {
         if (!_isDefeated)
         {
+            Blackboard.Instance.OnPlayerAction(PlayerActionCool.Punches);
             _rigidbody.isKinematic = false;
             _isDefeated = true;
             Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
