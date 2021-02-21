@@ -149,7 +149,7 @@ public class IdleEnemyBehaviour : MonoBehaviour , IHookable
 
     private void OnPlayerIsDead()
     {
-        _timer = 0;
+        _timer = -2;
     }
 
 }

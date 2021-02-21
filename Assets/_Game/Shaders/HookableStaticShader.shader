@@ -6,6 +6,7 @@
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
+        _EmissionMult ("Emission Mult", Range(0,30)) = 10
     }
     SubShader
     {
@@ -28,6 +29,7 @@
 
         half _Glossiness;
         half _Metallic;
+        float _EmissionMult;
         fixed4 _Color;
 
         // Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
@@ -43,7 +45,7 @@
             // Albedo comes from a texture tinted by color
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
             o.Albedo = c.rgb * (1-_SlowTimeGlobalValue);
-            o.Emission = _HookableColor * _SlowTimeGlobalValue * 10;
+            o.Emission = _HookableColor * _SlowTimeGlobalValue * _EmissionMult;
             // Metallic and smoothness come from slider variables
             
             

@@ -11,6 +11,7 @@
         <e p="_Game" t="Include">
           <e p="Scripts" t="Include">
             <e p="Blackboard.cs" t="Include" />
+            <e p="BossEnemyBehaviour.cs" t="Include" />
             <e p="BulletBehaviour.cs" t="Include" />
             <e p="CameraController.cs" t="Include" />
             <e p="CursorController.cs" t="Include" />
@@ -18,6 +19,7 @@
             <e p="IdleEnemyBehaviour.cs" t="Include" />
             <e p="IHookable.cs" t="Include" />
             <e p="InputFlag.cs" t="Include" />
+            <e p="MovingHookableBehaviour.cs" t="Include" />
             <e p="PlayerController.cs" t="Include" />
             <e p="RopeController.cs" t="Include" />
             <e p="StaticHookableBehaviour.cs" t="Include" />

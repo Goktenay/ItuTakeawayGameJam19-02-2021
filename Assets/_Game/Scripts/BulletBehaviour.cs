@@ -26,6 +26,15 @@ public class BulletBehaviour : MonoBehaviour , IHookable
         _aliveTime = 0;
         transform.rotation = Quaternion.LookRotation(direction);
     }
+
+    public void InitializeWithSpeed(Vector3 dir, float speed)
+    {
+        _speed = speed;
+        _currentSpeed = _speed;
+        _direction = dir.normalized;
+        _aliveTime = 0;
+        transform.rotation = Quaternion.LookRotation(dir);
+    }
     
     
     // Start is called before the first frame update

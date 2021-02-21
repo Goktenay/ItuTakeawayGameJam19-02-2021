@@ -193,6 +193,8 @@ public class Blackboard : MonoBehaviour
     
     public void OnPlayerAction(PlayerActionCool cool)
     {
+        return;
+        
         if(_isShowingCoolText)
             return;
 
@@ -260,6 +262,8 @@ public class Blackboard : MonoBehaviour
 
         void ShowCoolTextButImmediate(string text)
         {
+            
+            
             _isShowingCoolText = true;
             SetPlayTweens(false);
                 float currentTimeScale = Time.timeScale;

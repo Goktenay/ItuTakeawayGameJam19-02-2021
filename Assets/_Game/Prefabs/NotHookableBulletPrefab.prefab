@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 808512817528858656}
   - component: {fileID: 6151246114288359316}
   m_Layer: 0
-  m_Name: BulletPrefab
+  m_Name: NotHookableBulletPrefab
   m_TagString: Bullet
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,8 +47,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _rigidbody: {fileID: 6151246114288359316}
-  _speed: 10
-  _lifespan: 5
+  _speed: 80
+  _lifespan: 20
+  _isHookable: 0
 --- !u!54 &6151246114288359316
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -245,7 +246,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 1.5
+  m_Radius: 2
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &9177575067635760778
 GameObject:
@@ -343,15 +344,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 70fff6b6a7ad4eb4297625291a9cc997, type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 70fff6b6a7ad4eb4297625291a9cc997, type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: 70fff6b6a7ad4eb4297625291a9cc997, type: 3}
       propertyPath: m_LocalScale.z
-      value: 2
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: 70fff6b6a7ad4eb4297625291a9cc997, type: 3}
       propertyPath: m_Materials.Array.data[0]

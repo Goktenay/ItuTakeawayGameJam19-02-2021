@@ -84,7 +84,7 @@ public class PlayerController : MonoBehaviour
         void CalculateFallDeath()
         {
 
-            if (_rigidbody.position.y < -20)
+            if (_rigidbody.position.y < -200)
             {
                     OnPlayerIsDead();
                     Blackboard.Instance.OnPlayerAction(PlayerActionCool.Falls);
