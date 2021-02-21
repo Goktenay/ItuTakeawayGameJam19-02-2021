@@ -1162,6 +1162,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 23183868838966038, guid: 8767d9ea8dddf69429fb6c89e304be40,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 93c75de3325fbb2409e71e058655d8b7, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8767d9ea8dddf69429fb6c89e304be40, type: 3}
 --- !u!1 &1526980365
@@ -1716,6 +1721,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20643b0b9bbf7944e8b2aa6199acd4bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _hookableColor: {r: 0, g: 0.6440239, b: 1, a: 0}
+  _enemyColor: {r: 1, g: 0, b: 0, a: 0}
+  _enemySpawnerColor: {r: 0.43125343, g: 0, b: 1, a: 1}
 --- !u!1 &1982686222
 GameObject:
   m_ObjectHideFlags: 0

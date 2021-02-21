@@ -29,7 +29,7 @@ public class Blackboard : MonoBehaviour
     [Header("Settings")] 
     [SerializeField] private Color _hookableColor;
     [SerializeField] private Color _enemyColor;
-
+    [SerializeField] private Color _enemySpawnerColor;
 
 
     private PlayerController _playerController;
@@ -81,9 +81,19 @@ public class Blackboard : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // Hide and lock cursor when right mouse button pressed
+        
+
+        // Unlock and show cursor when right mouse button released
+  
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+        
+        
         _SlowTimeGlobalValueShaderId = Shader.PropertyToID("_SlowTimeGlobalValue");
         Shader.SetGlobalColor("_HookableColor", _hookableColor);
         Shader.SetGlobalColor("_EnemyColor", _enemyColor);
+        Shader.SetGlobalColor("_EnemySpawnerColor", _enemySpawnerColor);
         
     }
 
