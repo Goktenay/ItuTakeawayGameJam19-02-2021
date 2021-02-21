@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
     public Rigidbody Rigidbody => _rigidbody;
     public Transform BulletAimTransform => _bulletAimTransform;
 
-    private HookableMetaData _hookableMeta;
+    private IHookable _currentHookable;
     
     // Start is called before the first frame update
     void Start()
@@ -225,47 +225,7 @@ public class PlayerController : MonoBehaviour
                     _isGrounded = false;
                 }
             }
-
-            void CalculateIsReadyToHook()
-            {
-                bool isReadyToHookLocal = _isReadyToHook;
-                _isReadyToHook = false;
-                if (!_isSwinging)
-                {
-                    Ray ray = new Ray(_cameraController.transform.position, _cameraController.ForwardVector);
-
-                    if (Physics.Raycast(ray, out RaycastHit hitInfo, _hookableDistance, _hookRaycastLayerMask))
-                    {
-                        IHookable hookable = hitInfo.collider.GetComponentInParent<IHookable>();
-
-                        if (hookable != null)
-                        {
-                            HookableMetaData data = hookable.TryToGetHookableCondition(hitInfo, _hookableTempTransform);
-                            if (data.CanHook)
-                            {
-                                _isReadyToHook = true;
-                                _hookableMeta = data;
-                            }
-
-                            
-                        }
-                        else
-                        {
-                            Debug.LogError("ERROR this shouldnt happen -> " + hitInfo.collider.gameObject.name);
-                        }
-                    }
-                    
-                    
-                    if (_isReadyToHook != isReadyToHookLocal)
-                    {
-                        Blackboard.Instance.CursorController.OnReadyToHookStateChange(_isReadyToHook ? HookCursorEnum.ReadyToHook : HookCursorEnum.NotHookable);
-                    }
-                    
-                }
-                
-                
-                
-            }
+            
             
             void CalculateSwing()
             {
@@ -296,17 +256,17 @@ public class PlayerController : MonoBehaviour
                 
                 void SwingInputStartActions()
                 {
-                    _hookableMeta.Hookable.OnHookStart();
+                    _currentHookable?.OnHookStart(_hookableTempTransform);
                     Blackboard.Instance.CursorController.OnReadyToHookStateChange(HookCursorEnum.Hooked);
-                    _ropeController.SetActivateRope(true, _hookableMeta.TransformToFollow);
-                    _maxTetherLength = (_rigidbody.position - _hookableMeta.TransformToFollow.position).magnitude;
+                    _ropeController.SetActivateRope(true, _hookableTempTransform);
+                    _maxTetherLength = (_rigidbody.position - _hookableTempTransform.position).magnitude;
                     _isOnAirAfterSwinging = false;
                     _isSwinging = true;
                 }
 
                 void SwingInputUpdateActions()
                 {
-                    _hookableMeta.Hookable.OnHookUpdate();
+                     _currentHookable?.OnHookUpdate(_hookableTempTransform);
                      _isOnGroundedAfterSwinging = false;
                      
                   //  Debug.DrawLine(_rigidbody.position, _hookableMeta.TransformToFollow.position, Color.green);
@@ -323,11 +283,11 @@ public class PlayerController : MonoBehaviour
 
                     if (_isGrounded)
                     {
-                        _rigidbody.AddForce( (_hookableMeta.TransformToFollow.position - _rigidbody.position).normalized * _tetherTentionForce, ForceMode.Acceleration );
+                        _rigidbody.AddForce( (_hookableTempTransform.position - _rigidbody.position).normalized * _tetherTentionForce, ForceMode.Acceleration );
                     }
                     
                     Vector3 newPos = _rigidbody.position + _rigidbody.velocity * Time.fixedDeltaTime;
-                    Vector3 tetherToNewPos = (newPos - _hookableMeta.TransformToFollow.position);
+                    Vector3 tetherToNewPos = (newPos - _hookableTempTransform.position);
                     tetherToNewPos = Vector3.ClampMagnitude(tetherToNewPos, _maxTetherLength);
 
                     if (tetherToNewPos.magnitude < _maxTetherLength)
@@ -336,7 +296,7 @@ public class PlayerController : MonoBehaviour
                     }
                     
                     
-                    _rigidbody.velocity = (tetherToNewPos - _rigidbody.position + _hookableMeta.TransformToFollow.position).normalized *  _rigidbody.velocity.magnitude;
+                    _rigidbody.velocity = (tetherToNewPos - _rigidbody.position + _hookableTempTransform.position).normalized *  _rigidbody.velocity.magnitude;
 
                     _rigidbody.velocity = Vector3.ClampMagnitude(_rigidbody.velocity, _swingingMaxSpeed);
                     _rigidbody.velocity -= (Time.fixedDeltaTime * _swingingFriction * _rigidbody.velocity);
@@ -346,7 +306,7 @@ public class PlayerController : MonoBehaviour
                 void SwingInputEndActions()
                 {
                     _ropeController.SetActivateRope(false, null);
-                    _hookableMeta.Hookable.OnHookEnd();
+                    _currentHookable?.OnHookEnd(_hookableTempTransform);
                     _isSwinging = false;
                     _isOnAirAfterSwinging = true;
                     Blackboard.Instance.CursorController.OnReadyToHookStateChange(HookCursorEnum.NotHookable);
@@ -396,6 +356,48 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    
+    void CalculateIsReadyToHook()
+    {
+        bool isReadyToHookLocal = _isReadyToHook;
+        _isReadyToHook = false;
+        if (!_isSwinging)
+        {
+            _currentHookable = null;
+            Ray ray = new Ray(_cameraController.transform.position, _cameraController.ForwardVector);
+
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, _hookableDistance, _hookRaycastLayerMask))
+            {
+                IHookable hookable = hitInfo.collider.GetComponentInParent<IHookable>();
+
+                if (hookable != null)
+                {
+                    bool canHook = hookable.TryToGetHookableCondition(hitInfo);
+                    if (canHook)
+                    {
+                        _currentHookable = hookable;
+                        _isReadyToHook = canHook;
+                    }
+
+                            
+                }
+                else
+                {
+                    Debug.LogError("ERROR this shouldnt happen -> " + hitInfo.collider.gameObject.name);
+                }
+            }
+                    
+                    
+            if (_isReadyToHook != isReadyToHookLocal)
+            {
+                Blackboard.Instance.CursorController.OnReadyToHookStateChange(_isReadyToHook ? HookCursorEnum.ReadyToHook : HookCursorEnum.NotHookable);
+            }
+                    
+        }
+                
+                
+                
+    }
 
     // Update is called once per frame
     void Update()
@@ -457,5 +459,15 @@ public class PlayerController : MonoBehaviour
     private void LateUpdate()
     {
         _cameraController.UpdatePosition(_cameraPositionRefTransform.position);
+    }
+
+    public void OnAttachedHookableObjectDestroyed()
+    {
+        _ropeController.SetActivateRope(false, null);
+        _isSwinging = false;
+        _isOnAirAfterSwinging = true;
+        Blackboard.Instance.CursorController.OnReadyToHookStateChange(HookCursorEnum.NotHookable);
+        CalculateIsReadyToHook();
+       
     }
 }

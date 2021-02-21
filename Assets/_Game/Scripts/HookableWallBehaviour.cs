@@ -16,18 +16,7 @@ public class HookableWallBehaviour : MonoBehaviour, IHookable
         
     }
 
-    public HookableMetaData TryToGetHookableCondition(RaycastHit info, Transform hookableTempTransform)
-    {
-        HookableMetaData data = new HookableMetaData();
-        data.Hookable = this;
-        data.CanHook = true;
-    
-        hookableTempTransform.transform.position = info.point;
-        hookableTempTransform.transform.SetParent(transform);
-        
-        data.TransformToFollow = hookableTempTransform.transform;
-        return data;
-    }
+
 
     public void OnHookStart()
     {
@@ -40,4 +29,44 @@ public class HookableWallBehaviour : MonoBehaviour, IHookable
     public void OnHookEnd()
     {
     }
+    
+    
+    private Transform _tempTransform;
+    private Vector3 _hookOffsetPoint;
+
+    private void OnDestroy()
+    {
+        if (_tempTransform != null)
+        {
+            OnHookEnd(_tempTransform);
+            Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
+        }
+    }
+
+
+    public bool TryToGetHookableCondition(RaycastHit info)
+    {
+        
+        _hookOffsetPoint = info.point;
+        return true;
+    }
+
+    public void OnHookStart(Transform hookTransform)
+    {
+        hookTransform.position = _hookOffsetPoint;
+        hookTransform.SetParent(transform);
+        _tempTransform = hookTransform;
+    }
+
+    public void OnHookUpdate(Transform hookTransform)
+    {
+     
+    }
+
+    public void OnHookEnd(Transform hookTransform)
+    {
+        hookTransform.SetParent(null);
+        _tempTransform = null;
+    }
+    
 }

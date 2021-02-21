@@ -36,7 +36,6 @@ public class RopeController : MonoBehaviour
 
    private bool _isRopeActive;
    private RopeSegment _lastRopeSegment;
-   private HookableMetaData _hookableMeta;
    private bool _isTweenEnded;
 
    private GameObject _endTransformCopyGameObject;

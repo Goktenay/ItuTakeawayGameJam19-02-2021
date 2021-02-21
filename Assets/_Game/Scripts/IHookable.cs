@@ -5,26 +5,12 @@ using UnityEngine;
 public interface IHookable
 {
     
-    HookableMetaData TryToGetHookableCondition(RaycastHit info, Transform hookableTempTransform);
+    bool TryToGetHookableCondition(RaycastHit info);
     
-    void OnHookStart();
-    void OnHookUpdate();
-    void OnHookEnd();
-
-    
-}
-
-public class HookableMetaData
-{
-    public IHookable Hookable;
-    public bool CanHook;
-
-    public Transform TransformToFollow;
-
-    private int _registerCount;
-    
+    void OnHookStart(Transform hookTransform);
+    void OnHookUpdate(Transform hookTransform);
+    void OnHookEnd(Transform hookTransform);
 
     
 }
-
 

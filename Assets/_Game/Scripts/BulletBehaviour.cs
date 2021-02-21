@@ -44,32 +44,41 @@ public class BulletBehaviour : MonoBehaviour , IHookable
         }
     }
 
-    public HookableMetaData TryToGetHookableCondition(RaycastHit info, Transform hookableTempTransform)
+    
+    private Transform _tempTransform;
+
+    private void OnDestroy()
     {
-        HookableMetaData data = new HookableMetaData();
-        data.Hookable = this;
-        hookableTempTransform.SetParent(transform);
-        hookableTempTransform.position = transform.position;
-        data.TransformToFollow = hookableTempTransform;
-        
-        
-        data.CanHook = true; 
-        
-        return  data;
+        if (_tempTransform != null)
+        {
+            OnHookEnd(_tempTransform);
+            Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
+        }
     }
 
-    public void OnHookStart()
+
+    public bool TryToGetHookableCondition(RaycastHit info)
     {
-        _currentSpeed = 0;
+        return true;
     }
 
-    public void OnHookUpdate()
+    public void OnHookStart(Transform hookTransform)
     {
-        _aliveTime -= Time.fixedDeltaTime ;
+        hookTransform.SetParent(transform);
+        hookTransform.localPosition = Vector3.zero;
+        _tempTransform = hookTransform;
+       // _currentSpeed = 0;
     }
 
-    public void OnHookEnd()
+    public void OnHookUpdate(Transform hookTransform)
     {
-        _currentSpeed = _speed;
+       // _aliveTime -= Time.fixedDeltaTime ;
+    }
+
+    public void OnHookEnd(Transform hookTransform)
+    {
+       // _currentSpeed = _speed;
+        hookTransform.SetParent(null);
+        _tempTransform = null;
     }
 }
