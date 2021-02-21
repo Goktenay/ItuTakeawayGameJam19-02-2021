@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform _bulletAimTransform;
     [SerializeField] private RopeController _ropeController;
     [SerializeField] private Transform _hookableTempTransform;
-    
+
     [Header("Settings")] 
     [SerializeField] private float _onGroundedMovementSpeed = 8;
     [SerializeField] private float _jumpSpeed;
@@ -34,8 +34,7 @@ public class PlayerController : MonoBehaviour
     [Space(10)] 
     [SerializeField] private float _onAirMovementForce = 8;
     [SerializeField] private float _isOnAirAfterSwingingxzFriction = 0.05f;
-    [Space(10)] 
-    [SerializeField] private float _hookableDistance = 20;
+
     
     private Vector2Int _inputDirection = Vector2Int.zero;
     private float _currentGravity;
@@ -86,14 +85,7 @@ public class PlayerController : MonoBehaviour
 
             if (_rigidbody.position.y < -20)
             {
-                Blackboard.Instance.OnPlayerKilled();
-                _rigidbody.position = _lastGroundedPosition;
-                _rigidbody.velocity = Vector3.zero;
-
-                if (_isSwinging)
-                {
-                    SwingInputEndActions();
-                }
+                    OnPlayerIsDead();
             }
         }
         
@@ -386,13 +378,13 @@ public class PlayerController : MonoBehaviour
             _currentHookable = null;
             Ray ray = new Ray(_cameraController.transform.position, _cameraController.ForwardVector);
 
-            if (Physics.Raycast(ray, out RaycastHit hitInfo, _hookableDistance, _hookRaycastLayerMask))
+            if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, _hookRaycastLayerMask))
             {
                 IHookable hookable = hitInfo.collider.GetComponentInParent<IHookable>();
 
                 if (hookable != null)
                 {
-                    bool canHook = hookable.TryToGetHookableCondition(hitInfo);
+                    bool canHook = hookable.TryToGetHookableCondition(hitInfo, ray);
                     if (canHook)
                     {
                         _currentHookable = hookable;
@@ -479,7 +471,18 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    
+
+    void OnPlayerIsDead()
+    {
+        _rigidbody.position = _lastGroundedPosition;
+        _rigidbody.velocity = Vector3.zero;
+
+        if (_isSwinging)
+        {
+            SwingInputEndActions();
+        }
+        Blackboard.Instance.OnPlayerKilled();
+    }
     
     private void LateUpdate()
     {
@@ -489,6 +492,13 @@ public class PlayerController : MonoBehaviour
     public void OnAttachedHookableObjectDestroyed()
     {
        SwingInputEndActions();
-       
+    }
+
+    private void OnCollisionEnter(Collision other)
+    {
+        if (other.gameObject.CompareTag("Bullet"))
+        {
+            OnPlayerIsDead();
+        }
     }
 }

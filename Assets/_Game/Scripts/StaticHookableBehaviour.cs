@@ -5,17 +5,8 @@ using UnityEngine;
 
 public class StaticHookableBehaviour : MonoBehaviour, IHookable
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    
+    [SerializeField] private float _hookableDistance = 20;
 
 
     private Transform _tempTransform;
@@ -30,9 +21,14 @@ public class StaticHookableBehaviour : MonoBehaviour, IHookable
     }
 
 
-    public bool TryToGetHookableCondition(RaycastHit info)
+    public bool TryToGetHookableCondition(RaycastHit info, Ray ray)
     {
-        return true;
+        if (info.distance < _hookableDistance)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public void OnHookStart(Transform hookTransform)

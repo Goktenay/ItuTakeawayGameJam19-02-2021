@@ -3,47 +3,58 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class IdleEnemyBehaviour : MonoBehaviour
+public class IdleEnemyBehaviour : MonoBehaviour , IHookable
 {
     [Header("Dependencies")] 
     [SerializeField] private Transform _rotationPivotTransform;
     [SerializeField] private Transform _bulletSpawnTransform; 
     [SerializeField] private GameObject _bulletPrefab;
-
+    [SerializeField] private Rigidbody _rigidbody;
+    
     [Header("Settings")] 
     [SerializeField] private float _rotateTowardsPlayerLerpSpeed;
     [SerializeField] private float _bulletSpawnCooldown;
     [SerializeField] private float _playerStartShootingTriggerRadius;
+    [SerializeField] private float _playerStopShootingTriggerRadius = 6;
+    [SerializeField] private float _hookableDistance = 5;
     
     private float _timer;
+    private bool _isDefeated;
+    
+    
     // Start is called before the first frame update
     void Start()
     {
-       
+        Blackboard.Instance.OnPlayerKilledEvent += OnPlayerIsDead;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Vector3 transformToPlayer = Blackboard.Instance.PlayerController.BulletAimTransform.position - transform.position;
-        
-        if (transformToPlayer.sqrMagnitude < _playerStartShootingTriggerRadius * _playerStartShootingTriggerRadius)
+        if (!_isDefeated)
         {
-            _rotationPivotTransform.rotation =
-                Quaternion.Lerp(_rotationPivotTransform.rotation,
-                    Quaternion.LookRotation(transformToPlayer),
-                    Time.deltaTime * _rotateTowardsPlayerLerpSpeed );
-
-            if (_timer > _bulletSpawnCooldown)
-            {
-                _timer = 0;
-                SpawnBullet();
-            }
             
+            Vector3 transformToPlayer = Blackboard.Instance.PlayerController.BulletAimTransform.position - transform.position;
+            float playerSqrMag = transformToPlayer.sqrMagnitude;
+            
+            if (playerSqrMag < _playerStartShootingTriggerRadius * _playerStartShootingTriggerRadius && playerSqrMag > _playerStopShootingTriggerRadius * _playerStopShootingTriggerRadius)
+            {
+                _rotationPivotTransform.rotation =
+                    Quaternion.Lerp(_rotationPivotTransform.rotation,
+                        Quaternion.LookRotation(transformToPlayer),
+                        Time.deltaTime * _rotateTowardsPlayerLerpSpeed );
+
+                if (_timer > _bulletSpawnCooldown)
+                {
+                    _timer = 0;
+                    SpawnBullet();
+                }
+                
+            }
+
+
+            _timer += Time.deltaTime;
         }
-
-
-        _timer += Time.deltaTime;
     }
 
     private void SpawnBullet()
@@ -55,8 +66,8 @@ public class IdleEnemyBehaviour : MonoBehaviour
     private void OnDrawGizmos()
     {
 
-        DrawCircleAroundActor(_playerStartShootingTriggerRadius, Color.green);
-        
+        DrawCircleAroundActor(_playerStartShootingTriggerRadius, Color.red);
+        DrawCircleAroundActor(_playerStopShootingTriggerRadius, Color.green);
         
         void DrawCircleAroundActor(float radiusMult, Color col)
         {
@@ -79,4 +90,62 @@ public class IdleEnemyBehaviour : MonoBehaviour
         }
 
     }
+
+    private Transform _tempTransform;
+    private Ray _playerHitRay;
+    
+    private void OnDestroy()
+    {
+        Blackboard.Instance.OnPlayerKilledEvent -= OnPlayerIsDead;
+
+        if (_tempTransform != null)
+        {
+            OnHookEnd(_tempTransform);
+            Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
+        }
+    }
+
+
+    public bool TryToGetHookableCondition(RaycastHit info, Ray ray)
+    {
+        if (info.distance < _hookableDistance && !_isDefeated)
+        {
+            _playerHitRay = ray;
+            return true;
+        }
+
+        return false;
+    }
+
+    public void OnHookStart(Transform hookTransform)
+    {
+        hookTransform.SetParent(transform);
+        hookTransform.localPosition = Vector3.zero;
+        _tempTransform = hookTransform;
+
+    }
+
+    public void OnHookUpdate(Transform hookTransform)
+    {
+        if (!_isDefeated)
+        {
+            _rigidbody.isKinematic = false;
+            _isDefeated = true;
+            Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
+            _rigidbody.AddForce(_playerHitRay.direction * 1000, ForceMode.Force);
+        }
+
+    }
+
+    public void OnHookEnd(Transform hookTransform)
+    {
+        hookTransform.SetParent(null);
+        _tempTransform = null;
+    }
+
+    private void OnPlayerIsDead()
+    {
+        _timer = 0;
+    }
+
 }

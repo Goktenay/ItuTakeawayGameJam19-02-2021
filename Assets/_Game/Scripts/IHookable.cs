@@ -5,7 +5,7 @@ using UnityEngine;
 public interface IHookable
 {
     
-    bool TryToGetHookableCondition(RaycastHit info);
+    bool TryToGetHookableCondition(RaycastHit info, Ray ray);
     
     void OnHookStart(Transform hookTransform);
     void OnHookUpdate(Transform hookTransform);

@@ -4,32 +4,8 @@ using UnityEngine;
 
 public class HookableWallBehaviour : MonoBehaviour, IHookable
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private float _hookableDistance = 20;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-
-
-    public void OnHookStart()
-    {
-    }
-
-    public void OnHookUpdate()
-    {
-    }
-
-    public void OnHookEnd()
-    {
-    }
-    
     
     private Transform _tempTransform;
     private Vector3 _hookOffsetPoint;
@@ -44,11 +20,15 @@ public class HookableWallBehaviour : MonoBehaviour, IHookable
     }
 
 
-    public bool TryToGetHookableCondition(RaycastHit info)
+    public bool TryToGetHookableCondition(RaycastHit info, Ray ray )
     {
-        
-        _hookOffsetPoint = info.point;
-        return true;
+        if (info.distance < _hookableDistance)
+        {
+            _hookOffsetPoint = info.point;
+            return true;
+        }
+
+        return false;
     }
 
     public void OnHookStart(Transform hookTransform)

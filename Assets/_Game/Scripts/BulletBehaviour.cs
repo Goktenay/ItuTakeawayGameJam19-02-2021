@@ -59,7 +59,7 @@ public class BulletBehaviour : MonoBehaviour , IHookable
     }
 
 
-    public bool TryToGetHookableCondition(RaycastHit info)
+    public bool TryToGetHookableCondition(RaycastHit info, Ray ray)
     {
         return true;
     }
