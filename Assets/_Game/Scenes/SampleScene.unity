@@ -1654,8 +1654,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _hookableColor: {r: 0, g: 0.6440239, b: 1, a: 0}
-  _nonHookableBulletColor: {r: 1, g: 0, b: 0, a: 0}
-  _hookableBulletColor: {r: 0.89975, g: 1, b: 0, a: 0}
+  _nonHookableBulletColor: {r: 1, g: 0, b: 0, a: 1}
+  _hookableBulletColor: {r: 0.2283752, g: 1, b: 0, a: 1}
   _enemySpawnerColor: {r: 0.43125343, g: 0, b: 1, a: 1}
 --- !u!4 &1982686223 stripped
 Transform:
