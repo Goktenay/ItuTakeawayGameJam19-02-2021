@@ -50,6 +50,8 @@ MonoBehaviour:
   _speed: 10
   _lifespan: 5
   _isHookable: 1
+  _doesStopWhenNotHooked: 1
+  _hookableDistance: 70
 --- !u!54 &6151246114288359316
 Rigidbody:
   m_ObjectHideFlags: 0

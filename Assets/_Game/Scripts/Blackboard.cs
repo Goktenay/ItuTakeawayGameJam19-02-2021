@@ -186,6 +186,7 @@ public class Blackboard : MonoBehaviour
 
     private bool _isShowingCoolText;
     private bool _coolTextPunchBool;
+    private bool _coolTextKillBossBool;
     private bool _coolTextSwingBool;
     private bool _coolTextWakeUpBool;
     private bool _coolTextSlowTimeBool;
@@ -193,17 +194,23 @@ public class Blackboard : MonoBehaviour
     
     public void OnPlayerAction(PlayerActionCool cool)
     {
-        return;
+   
         
         if(_isShowingCoolText)
             return;
-
-     
         
 
         float randomVar = Random.Range(0f, 1f);
         switch (cool)
         {
+            case PlayerActionCool.KillsBoss:
+                if (!_coolTextKillBossBool && _timeBetweenShowCoolTextPassed)
+                {
+                    ShowCoolText("Saves The World");
+                    _coolTextKillBossBool = true;
+                }
+                break;
+
             case PlayerActionCool.Falls:
                 if (randomVar < 0.5)
                 {
@@ -253,6 +260,8 @@ public class Blackboard : MonoBehaviour
                     _coolTextSlowTimeBool = true;
                 }
                 break;
+            
+            
             default:
                 throw new ArgumentOutOfRangeException(nameof(cool), cool, null);
 
@@ -402,7 +411,7 @@ public class Blackboard : MonoBehaviour
 public enum PlayerActionCool
 {
     Falls, GetHitsByABullet, Punches, Swings,
-    WakesUp, SlowsTime
+    WakesUp, SlowsTime, KillsBoss
 
 }
 

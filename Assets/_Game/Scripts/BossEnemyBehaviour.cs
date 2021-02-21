@@ -12,13 +12,21 @@ public class BossEnemyBehaviour : MonoBehaviour , IHookable
     [SerializeField] private GameObject _hookableBulletPrefab;
     [SerializeField] private Rigidbody _rigidbody;
     [SerializeField] private Vector3 _spawnDirection;
-    
+
     [Header("State 0")] 
+    [SerializeField] private Transform _state0PositionTransform;
     [SerializeField] private float _state0BulletSpawnCooldown;
     [SerializeField] private float _state0BulletSpeed;
+   
+    [Header("State 1")] 
+    [SerializeField] private Transform _state1PositionTransform;
+    [SerializeField] private float _state1BulletSpawnCooldown;
+    [SerializeField] private float _state1BulletSpeed;
     
-    
-    
+    [Header("State 2")] 
+    [SerializeField] private Transform _state2PositionTransform;
+    [SerializeField] private float _state2BulletSpawnCooldown;
+    [SerializeField] private float _state2BulletSpeed;
     
     
     [Header("Settings")]
@@ -42,8 +50,18 @@ public class BossEnemyBehaviour : MonoBehaviour , IHookable
     // Update is called once per frame
     void Update()
     {
+        
+        
         if (!_isDefeated)
         {
+            if (Input.GetKeyDown(KeyCode.Alpha9))
+            {
+                Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
+                _stateEnum = StateEnum.State0;
+                transform.position = _state0PositionTransform.position;
+                _timer = -2;
+            }
+            
             
             Vector3 transformToPlayer = Blackboard.Instance.PlayerController.BulletAimTransform.position - transform.position;
             float playerSqrMag = transformToPlayer.sqrMagnitude;
@@ -97,21 +115,68 @@ public class BossEnemyBehaviour : MonoBehaviour , IHookable
         }
 
         
-        
-        
-        
         _timer += Time.deltaTime;
     }
     
+    
+    
+    private int _state1Test = 0;
+    private float _state1Test2 = 0;
     private void State1Actions()
     {
+        if (_timer > _state1BulletSpawnCooldown)
+        {
+            float val = Mathf.PingPong(_state1Test, 10f) - 5;
+            _state1Test2 += 0.31f;
+            float val2 = Mathf.PingPong(_state1Test2, 10f) - 5;
+            _state1Test++;
+            Vector3 posRelative =   _bulletSpawnTransform.position;
+            Vector3 rightVec = new Vector3(-_spawnDirection.z, 0, _spawnDirection.x);
+            int spawnDistance = 4;
+
+                Vector3 spawnPos = posRelative +  5 * val * rightVec ;
+                spawnPos +=  Vector3.up * val2 * 10;
+            
+                GameObject bullet = Instantiate(_state1Test % 2 == 0 ? _hookableBulletPrefab : _nonHookablebulletPrefab, spawnPos,
+                    Quaternion.identity);
+
+                BulletBehaviour behaviour = bullet.GetComponent<BulletBehaviour>();
+                behaviour.InitializeWithSpeed(_spawnDirection, _state1BulletSpeed);
+            
+            
+            _timer = 0;
+        }
+
         
+        _timer += Time.deltaTime;
     }
+
+    private int _state3Test = 0;
 
     
     private void State2Actions()
     {
+        if (_timer > _state2BulletSpawnCooldown)
+        {
+            Vector3 usToPlayer = Blackboard.Instance.PlayerController.Rigidbody.position   - _bulletSpawnTransform.position; 
+            Vector3 newDir = new Vector3(0, Random.Range(-0.1f,0.1f), Random.Range(-0.1f,0.1f)) + usToPlayer.normalized;
+
+            _state3Test++;
         
+           
+
+            GameObject bullet = Instantiate(_state3Test % 3 == 0 ? _hookableBulletPrefab : _nonHookablebulletPrefab,  _bulletSpawnTransform.position ,
+                Quaternion.identity);
+
+            BulletBehaviour behaviour = bullet.GetComponent<BulletBehaviour>();
+            behaviour.InitializeWithSpeed(newDir, _state2BulletSpeed);
+            
+
+            _timer = 0;
+        }
+
+        
+        _timer += Time.deltaTime;
     }
 
     
@@ -189,15 +254,39 @@ public class BossEnemyBehaviour : MonoBehaviour , IHookable
     {
         if (!_isDefeated)
         {
-            Blackboard.Instance.OnPlayerAction(PlayerActionCool.Punches);
-            _rigidbody.isKinematic = false;
-            _isDefeated = true;
-            Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
-            _rigidbody.AddForce(_playerHitRay.direction * 1000, ForceMode.Force);
-            _rigidbody.AddTorque(Random.insideUnitSphere * 1000, ForceMode.Force);
-        }
+            
+            if (_stateEnum == StateEnum.State0)
+            {
+                Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
+                _stateEnum = StateEnum.State1;
+                transform.position = _state1PositionTransform.position;
+                _timer = -2;
+                Blackboard.Instance.OnPlayerAction(PlayerActionCool.Punches);
+            }
+            else if (_stateEnum == StateEnum.State1)
+            {
+                Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
+                _stateEnum = StateEnum.State2;
+                transform.position = _state2PositionTransform.position;
+                _timer = -2;
+                Blackboard.Instance.OnPlayerAction(PlayerActionCool.Punches);
+            }
+            else if (_stateEnum == StateEnum.State2)
+            {
 
+                Blackboard.Instance.OnPlayerAction(PlayerActionCool.Punches);
+                _rigidbody.isKinematic = false;
+                _isDefeated = true;
+                Blackboard.Instance.PlayerController.OnAttachedHookableObjectDestroyed();
+                _rigidbody.AddForce(_playerHitRay.direction * 10000, ForceMode.Force);
+                _rigidbody.AddTorque(Random.insideUnitSphere * 10000, ForceMode.Force);
+                Blackboard.Instance.OnPlayerAction(PlayerActionCool.KillsBoss);
+            }
+        
+        }
     }
+    
+    
 
     public void OnHookEnd(Transform hookTransform)
     {
@@ -207,6 +296,7 @@ public class BossEnemyBehaviour : MonoBehaviour , IHookable
 
     private void OnPlayerIsDead()
     {
+        
         _timer = -2;
     }
 

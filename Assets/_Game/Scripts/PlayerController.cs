@@ -495,7 +495,10 @@ public class PlayerController : MonoBehaviour
 
     public void OnAttachedHookableObjectDestroyed()
     {
-       SwingInputEndActions();
+        if (_isSwinging)
+        {
+            SwingInputEndActions();
+        }
     }
 
     private void OnCollisionEnter(Collision other)

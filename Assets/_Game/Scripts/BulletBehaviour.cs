@@ -13,7 +13,8 @@ public class BulletBehaviour : MonoBehaviour , IHookable
     [SerializeField] private float _speed;
     [SerializeField] private float _lifespan;
     [SerializeField] private bool _isHookable;
-    
+    [SerializeField] private bool _doesStopWhenNotHooked = false;
+    [SerializeField] private float _hookableDistance = 1000;
     private float _currentSpeed;
 
     private Vector3 _direction;
@@ -72,7 +73,7 @@ public class BulletBehaviour : MonoBehaviour , IHookable
 
     public bool TryToGetHookableCondition(RaycastHit info, Ray ray)
     {
-        if (_isHookable)
+        if (_isHookable && info.distance < _hookableDistance)
         {
             return true;
         }
@@ -88,6 +89,12 @@ public class BulletBehaviour : MonoBehaviour , IHookable
         hookTransform.SetParent(transform);
         hookTransform.localPosition = Vector3.zero;
         _tempTransform = hookTransform;
+
+        if (_doesStopWhenNotHooked)
+        {
+            _currentSpeed = 0;
+        }
+        
        // _currentSpeed = 0;
     }
 
@@ -98,6 +105,11 @@ public class BulletBehaviour : MonoBehaviour , IHookable
 
     public void OnHookEnd(Transform hookTransform)
     {
+        if (_doesStopWhenNotHooked)
+        {
+            _currentSpeed = _speed;
+        }
+        
        // _currentSpeed = _speed;
         hookTransform.SetParent(null);
         _tempTransform = null;
